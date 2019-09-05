@@ -10,13 +10,8 @@
     <!-- other supported params: auto_exposure, exposure_absolute, brightness, power_line_frequency -->
 
     <param name="left/device" type="string" value="/dev/video0" />
-    <param name="right/device" type="string" value="/dev/video2" />
+    <param name="right/device" type="string" value="/dev/video1" />
     <param name="left/camera_info_url" type="string" value="file://$(find uvc_camera)/example-left.yaml" />
     <param name="right/camera_info_url" type="string" value="file://$(find uvc_camera)/example-right.yaml" />
-  <remap from="left/image_raw" to="left/image_raw_unrot"/>
-    <remap from="right/image_raw" to="right/image_raw_unrot"/>  
-  </node>
-  
-  <node pkg="cam_pub_usb" type="cam_pub_usb.py" name="rotate_image"/>
- 
+ </node>
 </launch>
