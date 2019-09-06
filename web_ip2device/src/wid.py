@@ -43,6 +43,7 @@ def fetch_image_msg(cam_ip):
     except CvBridgeError as e:
         rospy.logerror(e)
         return None
+    img_msg.header.stamp=rospy.Time.now()
     return img_msg  
 
 def leftCall():
