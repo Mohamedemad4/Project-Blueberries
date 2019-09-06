@@ -1,0 +1,5 @@
+<launch>
+<include file="$(find stero_proc_lanuch)/launch/stereo_image_proc.launch"></include>
+<include file="$(find web_ip2device)/launch/ipcam2ros.launch"></include>
+
+</launch>

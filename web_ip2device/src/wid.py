@@ -6,14 +6,17 @@ import numpy as np
 import cv2
 from threading import Thread
 import requests as r
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image,CameraInfo
 from camera_info_manager import *
 from cv_bridge import CvBridge, CvBridgeError
 
 rospy.init_node("ipcam_to_ros")
 
-publeft = rospy.Publisher('left/image_raw', Image, queue_size=10)
-pubright = rospy.Publisher('right/image_raw', Image, queue_size=10)
+publeft = rospy.Publisher('left/image_raw', Image, queue_size=1)
+pubright = rospy.Publisher('right/image_raw', Image, queue_size=1)
+
+publeft_cinfo = rospy.Publisher('left/camera_info', CameraInfo, queue_size=10)
+pubright_cinfo = rospy.Publisher('right/camera_info', CameraInfo, queue_size=10)
 
 bridge=CvBridge()
 
@@ -47,6 +50,7 @@ def leftCall():
         img=fetch_image_msg(left_cam_ip)
         if img:
             publeft.publish(img)
+            publeft_cinfo.publish(l_cam_info.getCameraInfo())
         rate.sleep()
 
 def rightCall():
@@ -54,6 +58,7 @@ def rightCall():
         img=fetch_image_msg(right_cam_ip)
         if img:
             pubright.publish(img)
+            pubright_cinfo.publish(r_cam_info.getCameraInfo())
     rate.sleep()
 
     
@@ -68,8 +73,11 @@ if __name__=="__main__":
     r.get("http://{0}/nofocus".format(right_cam_ip))
 
     rospy.loginfo("Setting Up Services...")    
-    CameraInfoManager(cname="left",url=left_config,namespace="left")
-    CameraInfoManager(cname="right",url=right_config,namespace="right")
+    l_cam_info=CameraInfoManager(cname="left",url=left_config,namespace="left")
+    r_cam_info=CameraInfoManager(cname="right",url=right_config,namespace="right")
+    
+    l_cam_info.loadCameraInfo()
+    r_cam_info.loadCameraInfo()
     
     rospy.loginfo("Spawing Publisher threads..")
     lc_thread=Thread(target=leftCall)

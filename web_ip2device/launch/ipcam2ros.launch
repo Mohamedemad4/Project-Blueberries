@@ -1,8 +1,9 @@
 <launch>
-  <node pkg="web_ip2device" type="wid.py" name="ipcam_to_ros">
-  <param name="left_cam_ip" value="192.168.1.8:8080" />
-  <param name="right_cam_ip" value="192.168.1.8:8080" />
-  <param name="left_config" value="file://$find(web_ip2device)/info/left.yaml" />
-  <param name="right_config" value="file://$find(web_ip2device)/info/right.yaml" />
+  <node pkg="web_ip2device" type="wid.py" name="ipcam_to_ros" output="screen">
+    <param name="left_cam_ip" value="127.0.0.1:8080" />
+    <param name="right_cam_ip" value="127.0.0.1:8080" />
+    <param name="left_config" value="file://$(find web_ip2device)/info/left.yaml" />
+    <param name="right_config" value="file://$(find web_ip2device)/info/right.yaml" />
   </node>
+  <node pkg="nodelet" type="nodelet" name="camera_process" args="manager" output="screen"/>
 </launch>
