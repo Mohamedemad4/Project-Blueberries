@@ -4,6 +4,7 @@ import time
 import sys
 import numpy as np
 import cv2
+from threading import Thread
 import requests as r
 from sensor_msgs.msg import Image
 from camera_info_manager import *
@@ -24,6 +25,8 @@ right_cam_ip=rospy.get_param('~right_cam_ip', None)
 left_config=rospy.get_param('~left_config',"file://home/daruis1/l.yaml")
 right_config=rospy.get_param('~right_config',"file://home/daruis1/r.yaml")
 
+rate=rospy.Rate(rate_limit)
+
 def fetch_image_msg(cam_ip):
     try:
         req=r.get("http://{0}/shot.jpg".format(cam_ip))
@@ -40,15 +43,18 @@ def fetch_image_msg(cam_ip):
     return img_msg  
 
 def leftCall():
-    img=fetch_image_msg(left_cam_ip)
-    if img:
-        publeft.publish(img)
+    while not rospy.is_shutdown():
+        img=fetch_image_msg(left_cam_ip)
+        if img:
+            publeft.publish(img)
+        rate.sleep()
 
 def rightCall():
-    img=fetch_image_msg(right_cam_ip)
-    if img:
-        pubright.publish(img)
-
+    while not rospy.is_shutdown():
+        img=fetch_image_msg(right_cam_ip)
+        if img:
+            pubright.publish(img)
+    rate.sleep()
 
     
 
@@ -64,8 +70,13 @@ if __name__=="__main__":
     rospy.loginfo("Setting Up Services...")    
     CameraInfoManager(cname="left",url=left_config,namespace="left")
     CameraInfoManager(cname="right",url=right_config,namespace="right")
-    rate=rospy.Rate(rate_limit)
-    while not rospy.is_shutdown():
-        leftCall()
-        rightCall()
-        rate.sleep()
+    
+    rospy.loginfo("Spawing Publisher threads..")
+    lc_thread=Thread(target=leftCall)
+    rc_thread=Thread(target=rightCall)
+    
+    lc_thread.start()
+    rc_thread.start()
+
+    lc_thread.join()
+    rc_thread.join()
