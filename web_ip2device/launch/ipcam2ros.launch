@@ -1,9 +1,12 @@
 <launch>
   <node pkg="web_ip2device" type="wid.py" name="ipcam_to_ros" output="screen">
-    <param name="left_cam_ip" value="127.0.0.1:8080" />
-    <param name="right_cam_ip" value="127.0.0.1:8080" />
+    <param name="left_cam_ip" value="192.168.43.1:8080" />
+    <param name="right_cam_ip" value="192.168.43.91:8080" />
     <param name="left_config" value="file://$(find web_ip2device)/info/left.yaml" />
     <param name="right_config" value="file://$(find web_ip2device)/info/right.yaml" />
+    <remap from="right/image_raw" to="right/image_raw_unrot"/>
+    <remap from="left/image_raw" to="left/image_raw_unrot"/>
   </node>
   <node pkg="nodelet" type="nodelet" name="camera_process" args="manager" output="screen"/>
+  <node pkg="cam_pub_usb" type="cam_pub_usb.py" name="rotate_image"/>
 </launch>
