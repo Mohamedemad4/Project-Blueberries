@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="unload_called_twice" pkg="test_nodelet" type="test_unload_called_twice.py" />
-</launch>
