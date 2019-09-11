@@ -1,0 +1,7 @@
+<launch>
+<include file="$(find openBerry)/launch/berry.launch"></include>
+<node pkg="nodelet" type="nodelet" name="points2scan" args="load pointcloud_to_laserscan/pointcloud_to_laserscan_nodelet /camera_process" output="screen">
+ <remap from="/cloud_in" to="/points2"/>
+ </node> 
+
+</launch>
